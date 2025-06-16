@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  Swift-Firebase-Auth
-//
-//  Created by kmjak on 2025/06/08.
-//
-
 import SwiftUI
 import FirebaseAuth
 
@@ -15,7 +8,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("ログイン")
+            Text("ログイン / 新規登録")
                 .font(.largeTitle)
                 .bold()
             
@@ -27,17 +20,27 @@ struct ContentView: View {
             SecureField("パスワード", text: $password)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             
-            Button("ログイン") {
-                login()
+            HStack(spacing: 20) {
+                Button("ログイン") {
+                    login()
+                }
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.blue)
+                .cornerRadius(10)
+                
+                Button("新規登録") {
+                    register()
+                }
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.green)
+                .cornerRadius(10)
             }
-            .padding()
-            .foregroundColor(.white)
-            .background(Color.blue)
-            .cornerRadius(10)
             
             if !message.isEmpty {
                 Text(message)
-                    .foregroundColor(.red)
+                    .foregroundColor(message.contains("成功") ? .green : .red)
             }
         }
         .padding()
@@ -46,9 +49,19 @@ struct ContentView: View {
     func login() {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error = error {
-                message = "エラー: \(error.localizedDescription)"
+                message = "ログインエラー: \(error.localizedDescription)"
             } else {
                 message = "ログイン成功！"
+            }
+        }
+    }
+    
+    func register() {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                message = "登録エラー: \(error.localizedDescription)"
+            } else {
+                message = "登録成功！ログインしてください。"
             }
         }
     }
