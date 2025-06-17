@@ -60,8 +60,14 @@ struct ContentView: View {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 message = "登録エラー: \(error.localizedDescription)"
-            } else {
-                message = "登録成功！ログインしてください。"
+            } else if let user = result?.user {
+                user.sendEmailVerification { error in
+                    if let error = error {
+                        message = "確認メール送信エラー: \(error.localizedDescription)"
+                    } else {
+                        message = "登録成功！確認メールを送信しました。メールを確認してください。"
+                    }
+                }
             }
         }
     }
