@@ -50,8 +50,20 @@ struct ContentView: View {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error = error {
                 message = "ログインエラー: \(error.localizedDescription)"
-            } else {
-                message = "ログイン成功！"
+            } else if let user = result?.user {
+                if user.isEmailVerified {
+                    message = "ログイン成功！"
+                } else {
+                    message = "メールアドレスが未確認です。メールを確認してください。"
+                    user.sendEmailVerification { error in
+                        if let error = error {
+                            print("確認メールの再送信に失敗: \(error.localizedDescription)")
+                        } else {
+                            print("確認メールを再送信しました。")
+                        }
+                    }
+                    try? Auth.auth().signOut()
+                }
             }
         }
     }
